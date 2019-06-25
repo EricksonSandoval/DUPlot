@@ -1,6 +1,6 @@
-#' @title Create high impact visualizations for direct selling companies
+#' Create high impact visualizations for direct selling companies
 #'
-#' @description This package gather several visualization designs which representation lets make quick analysis and consequently take better decisions in business.
+#' This package gather several visualization designs which representation lets make quick analysis and consequently take better decisions in business.
 #'
 #' @param DF_TOTAL
 #' @param LLAVE_ANALISIS
@@ -8,10 +8,10 @@
 #' @param EXPORTAR
 #' @param RUTA
 #'
-#' @return NULL
-#'
 #'
 #' @export
+#' @examples
+#' AccyAnalysis()
 
 
 calc_performance <- function(DF_TOTAL, PAIS, EXPORTAR, RUTA){
@@ -362,7 +362,7 @@ plot_performance <- function(CONSOLIDADO, LA_CAMP, LINEA, PAIS, EXPORTAR, RUTA){
 
 
 
-AccyAnalisis <- function(DF_TOTAL, LLAVE_ANALISIS, PAIS, EXPORTAR, RUTA){
+AccyAnalysis <- function(DF_TOTAL, LLAVE_ANALISIS, PAIS, EXPORTAR, RUTA){
 
   DF_CAMP <- DF_TOTAL[DF_TOTAL$CODI_CAMP == LLAVE_ANALISIS,]
 
@@ -380,7 +380,7 @@ AccyAnalisis <- function(DF_TOTAL, LLAVE_ANALISIS, PAIS, EXPORTAR, RUTA){
 
 }
 
-# RESULTS <- AccyAnalisis(DF_TOTAL, LLAVE_ANALISIS, PAIS, EXPORTAR, RUTA)
+# RESULTS <- AccyAnalysis(DF_TOTAL, LLAVE_ANALISIS, PAIS, EXPORTAR, RUTA)
 #
 # DATA_ASERT <- RESULTS$CONS_ASERT
 #
@@ -393,4 +393,3 @@ AccyAnalisis <- function(DF_TOTAL, LLAVE_ANALISIS, PAIS, EXPORTAR, RUTA){
 #library(knitr)
 
 #purl("1. Performance_Modelo_General.Rmd")
-
