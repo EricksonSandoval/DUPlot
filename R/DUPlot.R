@@ -343,12 +343,12 @@ plot_performance <- function(CONSOLIDADO, LA_CAMP, LINEA, PAIS, EXPORTAR, RUTA){
 
   if(EXPORTAR==1){
 
-    png(paste(RUTA, "/", PAIS, "_", substr(LINEA, 1,2), "_ASERT_", CAMPANA_ANALISIS, ".png", sep=""),
+    png(paste(RUTA, "/", PAIS, "_", substr(LINEA, 1,2), "_ASERT_", LA_CAMP, ".png", sep=""),
         width=1600, height=1200, res=220)
     plot(plot_DFAP)
     dev.off()
 
-    png(paste(RUTA, "/", PAIS, "_", substr(LINEA, 1,2), "_DIFER_", CAMPANA_ANALISIS, ".png", sep=""),
+    png(paste(RUTA, "/", PAIS, "_", substr(LINEA, 1,2), "_DIFER_", LA_CAMP, ".png", sep=""),
         width=1600, height=1200, res=220)
     plot(plot_DFQ)
     dev.off()
