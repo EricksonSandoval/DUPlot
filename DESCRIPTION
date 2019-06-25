@@ -11,7 +11,7 @@ Authors@R: c(person(given = "Erickson",
                     role = c("aut"),
                     email = "pcotacallapa@pucp.edu.pe"))
 Description: This package gather several visualization designs which representation lets make quick analysis and consequently take better decisions in business
-Encoding: latin1
+Encoding: UTF-8
 LazyData: FALSE
 Imports:
   openxlsx, dplyr
