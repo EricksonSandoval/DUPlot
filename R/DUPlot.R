@@ -3,7 +3,7 @@
 #' This package gather several visualization designs which representation lets make quick analysis and consequently take better decisions in business.
 #'
 #' @param DF_TOTAL
-#' @param LLAVE_ANALISIS
+#' @param CAMPANA_ANALISIS
 #' @param PAIS
 #' @param EXPORTAR
 #' @param RUTA
@@ -343,12 +343,12 @@ plot_performance <- function(CONSOLIDADO, LA_CAMP, LINEA, PAIS, EXPORTAR, RUTA){
 
   if(EXPORTAR==1){
 
-    png(paste(RUTA, "/", PAIS, "_", substr(LINEA, 1,2), "_ASERT_", LLAVE_ANALISIS, ".png", sep=""),
+    png(paste(RUTA, "/", PAIS, "_", substr(LINEA, 1,2), "_ASERT_", CAMPANA_ANALISIS, ".png", sep=""),
         width=1600, height=1200, res=220)
     plot(plot_DFAP)
     dev.off()
 
-    png(paste(RUTA, "/", PAIS, "_", substr(LINEA, 1,2), "_DIFER_", LLAVE_ANALISIS, ".png", sep=""),
+    png(paste(RUTA, "/", PAIS, "_", substr(LINEA, 1,2), "_DIFER_", CAMPANA_ANALISIS, ".png", sep=""),
         width=1600, height=1200, res=220)
     plot(plot_DFQ)
     dev.off()
@@ -362,9 +362,9 @@ plot_performance <- function(CONSOLIDADO, LA_CAMP, LINEA, PAIS, EXPORTAR, RUTA){
 
 
 
-AccyAnalysis <- function(DF_TOTAL, LLAVE_ANALISIS, PAIS, EXPORTAR, RUTA){
+AccyAnalysis <- function(DF_TOTAL, CAMPANA_ANALISIS, PAIS, EXPORTAR, RUTA){
 
-  DF_CAMP <- DF_TOTAL[DF_TOTAL$CODI_CAMP == LLAVE_ANALISIS,]
+  DF_CAMP <- DF_TOTAL[DF_TOTAL$CODI_CAMP == CAMPANA_ANALISIS,]
 
   consolidado_res <- calc_performance(DF_CAMP, PAIS, EXPORTAR, RUTA)
 
@@ -372,7 +372,7 @@ AccyAnalysis <- function(DF_TOTAL, LLAVE_ANALISIS, PAIS, EXPORTAR, RUTA){
 
   for (i in NOMB_LINES){
 
-    plot_performance(consolidado_res, LLAVE_ANALISIS, i, PAIS, EXPORTAR, RUTA)
+    plot_performance(consolidado_res, CAMPANA_ANALISIS, i, PAIS, EXPORTAR, RUTA)
 
   }
 
@@ -380,7 +380,7 @@ AccyAnalysis <- function(DF_TOTAL, LLAVE_ANALISIS, PAIS, EXPORTAR, RUTA){
 
 }
 
-# RESULTS <- AccyAnalysis(DF_TOTAL, LLAVE_ANALISIS, PAIS, EXPORTAR, RUTA)
+# RESULTS <- AccyAnalysis(DF_TOTAL, CAMPANA_ANALISIS, PAIS, EXPORTAR, RUTA)
 #
 # DATA_ASERT <- RESULTS$CONS_ASERT
 #
