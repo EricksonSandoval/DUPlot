@@ -1,12 +1,12 @@
-\name{hello}
-\alias{hello}
-\title{Hello, World!}
+\name{DUPlot}
+\alias{DUPlot}
+\title{Create high impact visualizations for direct selling companies}
 \usage{
-hello()
+DUPlot()
 }
 \description{
-Prints 'Hello, world!'.
+This package gather several visualization designs which representation lets make quick analysis and consequently take better decisions in business.
 }
 \examples{
-hello()
+DUPlot()
 }
