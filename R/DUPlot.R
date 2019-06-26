@@ -53,12 +53,12 @@ calc_performance <- function(DF_TOTAL, PAIS, EXPORTAR, RUTA){
                                                                  INT_LAB$INT)]}))
 
   DF1 <- data.frame(DF1,
-                    DIF_CANT = (DF1[, 6:(5 + n_models)] - DF1$REAL)/1000)
+                    DIF_CANT = ceiling((DF1[, 6:(5 + n_models)] - DF1$REAL)/10)*10)
 
   DF1X <- DF1
 
-  DF1X$DIF_CANT.RG3 <- DF1X$DIF_CANT.RG3*1000
-  DF1X$DIF_CANT.MOD <- DF1X$DIF_CANT.MOD*1000
+  DF1X$DIF_CANT.RG3 <- DF1X$DIF_CANT.RG3
+  DF1X$DIF_CANT.MOD <- DF1X$DIF_CANT.MOD
 
   DFA <- DF1[, c(1:2, (6 + 2 * n_models):(5 + 3 * n_models))]
 
@@ -124,7 +124,7 @@ calc_performance <- function(DF_TOTAL, PAIS, EXPORTAR, RUTA){
                                                                  INT_LAB$INT)]}))
 
   DF1 <- data.frame(DF1,
-                    DIF_CANT = (DF1[, 6:(5 + n_models)] - DF1$REAL)/1000)
+                    DIF_CANT = ceiling((DF1[, 6:(5 + n_models)] - DF1$REAL)/10)*10)
 
 
   DFQ <- DF1[,c(1, 2, (6 + 2 * n_models):(5 + 3 * n_models),
@@ -231,8 +231,8 @@ plot_performance <- function(CONSOLIDADO, LA_CAMP, LINEA, PAIS, EXPORTAR, RUTA){
                       aes(x = ASERTIVIDAD,
                           y = PRODUCTOS,
                           group = MODELO,
-                          label = format(PRODUCTOS * 100,
-                                         digits = 0),
+                          label = paste0(format(PRODUCTOS * 100,
+                                                digits = 0),"%"),
                           fill = ASERTIVIDAD)) +
     geom_bar(position = "dodge",
              stat = "identity") +
@@ -255,7 +255,7 @@ plot_performance <- function(CONSOLIDADO, LA_CAMP, LINEA, PAIS, EXPORTAR, RUTA){
     strip.text = element_text(size = 13),
     legend.text = element_text(size = 12),
     legend.position = "bottom") +
-    ggtitle(paste("DistribuciÃ³n de productos segÃºn asertividad \n",
+    ggtitle(paste("Distribución de productos según asertividad \n",
                   LINEA,
                   " ",
                   LA_CAMP,
@@ -298,6 +298,7 @@ plot_performance <- function(CONSOLIDADO, LA_CAMP, LINEA, PAIS, EXPORTAR, RUTA){
 
   col_asertividad2 = as.character(INT_COL_2$COLOR[match(LAB_2, INT_COL_2$LAB)])
 
+  options(scipen=100000)
   plot_DFQ <- ggplot(DFQ[DFQ$CAMPANA == LA_CAMP,], aes(x = ASERTIVIDAD,
                                                        y = DIFERENCIA,
                                                        fill = ASERTIVIDAD,
@@ -321,7 +322,7 @@ plot_performance <- function(CONSOLIDADO, LA_CAMP, LINEA, PAIS, EXPORTAR, RUTA){
     strip.text = element_text(size = 13),
     legend.text = element_text(size = 12),
     legend.position = "bottom") +
-    ggtitle(paste("DistribuciÃ³n de sobrantes / faltantes segÃºn asertividad \n",
+    ggtitle(paste("Distribución de sobrantes / faltantes según asertividad \n",
                   LINEA,
                   " ",
                   LA_CAMP,
@@ -330,7 +331,7 @@ plot_performance <- function(CONSOLIDADO, LA_CAMP, LINEA, PAIS, EXPORTAR, RUTA){
                   sep = "")) +
     xlab("Asertividad") +
     ylab("Diferencia (miles de unidades)") +
-    geom_text(aes(label = format(DIFERENCIA,
+    geom_text(aes(label = format(abs(DIFERENCIA),
                                  digits=0)),
               size = 4.1,
               position = position_dodge(width = 0.95),
