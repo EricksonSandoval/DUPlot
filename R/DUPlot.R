@@ -190,7 +190,6 @@ calc_performance <- function(DF_TOTAL, PAIS, EXPORTAR, RUTA){
   print(DFQ)
 
   if (nrow(DF_DLT)!=0){
-
     write.xlsx(x = DF_DLT, file = paste(RUTA, "/", PAIS, "_", "DATA_ELIMI.xlsx", sep=""), sheetName = "DATOS", col.names = T, row.names = F)
     print(DF_DLT)
 
@@ -205,7 +204,7 @@ calc_performance <- function(DF_TOTAL, PAIS, EXPORTAR, RUTA){
 plot_performance <- function(CONSOLIDADO, LA_CAMP, LINEA, PAIS, EXPORTAR, RUTA){
 
   DFAP <- CONSOLIDADO[["ASERT_PCT"]]
-
+  LAB_1 <- sort(unique(DFAP$ASERTIVIDAD))
   DFAP <- DFAP[DFAP$LINEA == LINEA,]
 
   library(ggplot2)
@@ -223,8 +222,6 @@ plot_performance <- function(CONSOLIDADO, LA_CAMP, LINEA, PAIS, EXPORTAR, RUTA){
                                     "#FF7F00",
                                     "#999999"))
 
-  LAB_1 <- sort(unique(DFAP$ASERTIVIDAD))
-
   col_asertividad = as.character(INT_COL_1$COLOR[match(LAB_1, INT_COL_1$LAB)])
 
   plot_DFAP <- ggplot(DFAP[DFAP$CAMPANA == LA_CAMP,],
@@ -236,9 +233,10 @@ plot_performance <- function(CONSOLIDADO, LA_CAMP, LINEA, PAIS, EXPORTAR, RUTA){
                           fill = ASERTIVIDAD)) +
     geom_bar(position = "dodge",
              stat = "identity") +
-    scale_fill_manual(values = col_asertividad) +
+    scale_fill_manual(values = col_asertividad, drop=F) +
     scale_y_continuous(labels = scales::percent_format(scale = 100,
                                                        accuracy = 1)) +
+    scale_x_discrete(drop=F) +
     theme(plot.title = element_text(color = "#636363",
                                     size = 18,
                                     face = "bold.italic"
@@ -274,7 +272,7 @@ plot_performance <- function(CONSOLIDADO, LA_CAMP, LINEA, PAIS, EXPORTAR, RUTA){
 
 
   DFQ <- CONSOLIDADO[["CANT_SYF"]]
-
+  LAB_2 <- sort(unique(DFQ$ASERTIVIDAD))
   DFQ <- DFQ[DFQ$LINEA==LINEA,]
 
 
@@ -293,18 +291,17 @@ plot_performance <- function(CONSOLIDADO, LA_CAMP, LINEA, PAIS, EXPORTAR, RUTA){
                                     "#FF7F00",
                                     "#999999"))
 
-
-  LAB_2 <- sort(unique(DFQ$ASERTIVIDAD))
-
   col_asertividad2 = as.character(INT_COL_2$COLOR[match(LAB_2, INT_COL_2$LAB)])
 
   options(scipen=100000)
+
   plot_DFQ <- ggplot(DFQ[DFQ$CAMPANA == LA_CAMP,], aes(x = ASERTIVIDAD,
                                                        y = DIFERENCIA,
                                                        fill = ASERTIVIDAD,
                                                        label = DIFERENCIA)) +
     geom_bar(position = "dodge", stat = "identity") +
-    scale_fill_manual(values = col_asertividad2) +
+    scale_fill_manual(values = col_asertividad2, drop=F) +
+    scale_x_discrete(drop=F) +
     theme(plot.title = element_text(color = "#636363",
                                     size = 18,
                                     face = "bold.italic"
@@ -330,7 +327,7 @@ plot_performance <- function(CONSOLIDADO, LA_CAMP, LINEA, PAIS, EXPORTAR, RUTA){
                   PAIS,
                   sep = "")) +
     xlab("Asertividad") +
-    ylab("Diferencia (miles de unidades)") +
+    ylab("Diferencia (unidades)") +
     geom_text(aes(label = format(abs(DIFERENCIA),
                                  digits=0)),
               size = 4.1,
@@ -345,12 +342,12 @@ plot_performance <- function(CONSOLIDADO, LA_CAMP, LINEA, PAIS, EXPORTAR, RUTA){
   if(EXPORTAR==1){
 
     png(paste(RUTA, "/", PAIS, "_", substr(LINEA, 1,2), "_ASERT_", LA_CAMP, ".png", sep=""),
-        width=1600, height=1200, res=220)
+        width=1700, height=1200, res=220)
     plot(plot_DFAP)
     dev.off()
 
     png(paste(RUTA, "/", PAIS, "_", substr(LINEA, 1,2), "_DIFER_", LA_CAMP, ".png", sep=""),
-        width=1600, height=1200, res=220)
+        width=1700, height=1200, res=220)
     plot(plot_DFQ)
     dev.off()
 
@@ -380,9 +377,6 @@ AccyAnalysis <- function(DF_TOTAL, CAMPANA_ANALISIS, PAIS, EXPORTAR, RUTA){
   return(consolidado_res)
 
 }
-
-# RESULTS <- AccyAnalysis(DF_TOTAL, CAMPANA_ANALISIS, PAIS, EXPORTAR, RUTA)
-#
 # DATA_ASERT <- RESULTS$CONS_ASERT
 #
 # if(nrow(RESULTS$DF_DLT)>0){
