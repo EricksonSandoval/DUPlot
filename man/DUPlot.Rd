@@ -1,6 +1,6 @@
 \docType{package}
 \name{DUPlot}
-\alias{DUPlot-package}
+\alias{DUPlot}
 \title{Create high impact visualizations for direct selling industry}
 \usage{
 DUPlot()
@@ -15,4 +15,3 @@ Authors:
   \item Pavel Cotacallapa \email{pcotacallapa@pucp.edu.pe}
 }
 }
-\keyword{plot, business, direct selling}
