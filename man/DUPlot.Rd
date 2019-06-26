@@ -10,10 +10,7 @@ This package gather several visualization designs which representation lets make
 }
 \author{
 \itemize{
-  \item Erickson Sandoval
-  \email{erickson.sandoval@utec.edu.pe}
-
-  \item Pavel Cotacallapa
-  \email{pcotacallapa@pucp.edu.pe}
+  \item Erickson Sandoval \email{erickson.sandoval@utec.edu.pe}
+  \item Pavel Cotacallapa \email{pcotacallapa@pucp.edu.pe}
 }
 }
