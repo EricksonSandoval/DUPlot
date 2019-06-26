@@ -255,7 +255,7 @@ plot_performance <- function(CONSOLIDADO, LA_CAMP, LINEA, PAIS, EXPORTAR, RUTA){
     strip.text = element_text(size = 13),
     legend.text = element_text(size = 12),
     legend.position = "bottom") +
-    ggtitle(paste("Distribución de productos según asertividad \n",
+    ggtitle(paste("DistribuciÃ³n de productos segÃºn asertividad \n",
                   LINEA,
                   " ",
                   LA_CAMP,
@@ -322,7 +322,7 @@ plot_performance <- function(CONSOLIDADO, LA_CAMP, LINEA, PAIS, EXPORTAR, RUTA){
     strip.text = element_text(size = 13),
     legend.text = element_text(size = 12),
     legend.position = "bottom") +
-    ggtitle(paste("Distribución de sobrantes / faltantes según asertividad \n",
+    ggtitle(paste("DistribuciÃ³n de sobrantes / faltantes segÃºn asertividad \n",
                   LINEA,
                   " ",
                   LA_CAMP,
