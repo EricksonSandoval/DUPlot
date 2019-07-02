@@ -255,7 +255,7 @@ plot_performance <- function(CONSOLIDADO, LA_CAMP, LINEA, PAIS, EXPORTAR, RUTA){
     strip.text = element_text(size = 13),
     legend.text = element_text(size = 12),
     legend.position = "bottom") +
-    ggtitle(paste("DistribuciÃÂ³n de productos segÃÂºn asertividad \n",
+    ggtitle(paste("Distribución de productos según asertividad \n",
                   LINEA,
                   " ",
                   LA_CAMP,
@@ -321,7 +321,7 @@ plot_performance <- function(CONSOLIDADO, LA_CAMP, LINEA, PAIS, EXPORTAR, RUTA){
     strip.text = element_text(size = 13),
     legend.text = element_text(size = 12),
     legend.position = "bottom") +
-    ggtitle(paste("DistribuciÃÂ³n de sobrantes / faltantes segÃÂºn asertividad \n",
+    ggtitle(paste("Distribución de sobrantes / faltantes según asertividad \n",
                   LINEA,
                   " ",
                   LA_CAMP,
@@ -445,6 +445,5 @@ SankeyDiagram <- function(DATABASE, INTERV, TITLE, PATH_FILE){
   png(PATH_FILE, width=4500, height=3000, res=300)
   plot(plot_sankey)
   dev.off()
-                       
   #ggsave(paste(cwd,"/PER_EVOL_SALES_201909.png", sep=""), height = 10, width = 15)
 }
