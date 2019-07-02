@@ -1,3 +1,4 @@
 export(calc_performance)
 export(plot_performance)
 export(AccyAnalysis)
+export(SankeyDiagram)

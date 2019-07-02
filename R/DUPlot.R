@@ -7,11 +7,13 @@
 #' @param PAIS
 #' @param EXPORTAR
 #' @param RUTA
-#'
+#' @param DATABASE
+#' @param INTERV
+#' @param TITLE
+#' @param PATH_FILE
 #'
 #' @export
 #' @examples
-#' AccyAnalysis()
 
 
 calc_performance <- function(DF_TOTAL, PAIS, EXPORTAR, RUTA){
@@ -436,8 +438,8 @@ SankeyDiagram <- function(DATABASE, INTERV, TITLE, PATH_FILE){
     geom_stratum(color = NA, width=0.45) +
     scale_fill_identity() +
     ggtitle(TITLE) +
-    labs(subtitle = paste0("\nCAMPAÑA ", min(as.character(DATABASE$CAMPANA)),
-                           " - CAMPAÑA ", max(as.character(DATABASE$CAMPANA)))) +
+    labs(subtitle = paste0("\nCAMPA?A ", min(as.character(DATABASE$CAMPANA)),
+                           " - CAMPA?A ", max(as.character(DATABASE$CAMPANA)))) +
     geom_text(stat = "stratum", fontface = "bold", color = "black", size=5)
 
   png(PATH_FILE, width=4500, height=3000, res=300)
