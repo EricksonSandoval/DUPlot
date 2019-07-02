@@ -255,7 +255,7 @@ plot_performance <- function(CONSOLIDADO, LA_CAMP, LINEA, PAIS, EXPORTAR, RUTA){
     strip.text = element_text(size = 13),
     legend.text = element_text(size = 12),
     legend.position = "bottom") +
-    ggtitle(paste("Distribución de productos según asertividad \n",
+    ggtitle(paste("DistribuciÃ³n de productos segÃºn asertividad \n",
                   LINEA,
                   " ",
                   LA_CAMP,
@@ -321,7 +321,7 @@ plot_performance <- function(CONSOLIDADO, LA_CAMP, LINEA, PAIS, EXPORTAR, RUTA){
     strip.text = element_text(size = 13),
     legend.text = element_text(size = 12),
     legend.position = "bottom") +
-    ggtitle(paste("Distribución de sobrantes / faltantes según asertividad \n",
+    ggtitle(paste("DistribuciÃ³n de sobrantes / faltantes segÃºn asertividad \n",
                   LINEA,
                   " ",
                   LA_CAMP,
@@ -438,8 +438,8 @@ SankeyDiagram <- function(DATABASE, INTERV, TITLE, PATH_FILE){
     geom_stratum(color = NA, width=0.45) +
     scale_fill_identity() +
     ggtitle(TITLE) +
-    labs(subtitle = paste0("\nCAMPA?A ", min(as.character(DATABASE$CAMPANA)),
-                           " - CAMPA?A ", max(as.character(DATABASE$CAMPANA)))) +
+    labs(subtitle = paste0("\nCAMPA�A ", min(as.character(DATABASE$CAMPANA)),
+                           " - CAMPA�A ", max(as.character(DATABASE$CAMPANA)))) +
     geom_text(stat = "stratum", fontface = "bold", color = "black", size=5)
 
   png(PATH_FILE, width=4500, height=3000, res=300)
