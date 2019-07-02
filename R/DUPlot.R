@@ -388,3 +388,60 @@ AccyAnalysis <- function(DF_TOTAL, CAMPANA_ANALISIS, PAIS, EXPORTAR, RUTA){
 #library(knitr)
 
 #purl("1. Performance_Modelo_General.Rmd")
+
+
+
+
+SankeyDiagram <- function(DATABASE, INTERV, TITLE, PATH_FILE){
+
+  library(ggalluvial)
+  library(RColorBrewer)
+  library(dplyr)
+
+  n_int <- length(INTERV) + 1
+  INTERV <- c(0, INTERV, Inf)
+  DATABASE$INTERVAL <- cut(DATABASE$VENTA.LINEA, b = INTERV)
+
+  LABELS <- data.frame(INTERVAL = sort(unique(DATABASE$INTERVAL)),
+                       LABEL = c(paste0("<", INTERV[2]/1000, "K"),
+                                 mapply(function(x,y) paste0(x/1000, "K-\n", y/1000, "K"), INTERV[2:(n_int-1)], INTERV[3:n_int]),
+                                 paste0(">", INTERV[n_int]/1000,"K")))
+
+  DATABASE$INTERVAL <- LABELS$LABEL[match(DATABASE$INTERVAL, LABELS$INTERVAL)]
+  DATABASE$INTERVAL <- factor(DATABASE$INTERVAL, levels = as.character(LABELS$LABEL)[n_int:1])
+
+
+  DB_1 <- data.frame(id = DATABASE[,2],
+                     round = DATABASE[,1],
+                     episode = DATABASE[,4])
+  colortable<- data.frame(episode = unique(DB_1$episode)[c(order(as.character(unique(DB_1$episode)))[1],
+                                                           order(as.character(unique(DB_1$episode)))[order(trimws(gsub("[[:punct:]]", "", as.character(unique(DB_1$episode))[order(as.character(unique(DB_1$episode)))[-c(1,2)]])))+2],
+                                                           order(as.character(unique(DB_1$episode)))[2])],
+                          color = c(brewer.pal(6,"Dark2")[6], brewer.pal(9,"Set1")[c(3,4,5)[0:(n_int-3)]], brewer.pal(9,"Set1")[c(2,1)]),
+                          stringsAsFactors = FALSE)
+
+  DB_FINAL <- DB_1 %>% left_join(colortable, by="episode")
+
+  plot_sankey <- ggplot(DB_FINAL, aes(x = round, stratum = episode, alluvium = id,
+                                      fill = color, label = episode)) +
+    theme(panel.background = element_blank(),
+          axis.ticks = element_blank(),
+          axis.text.x = element_text(size=20),
+          axis.text.y = element_blank(),
+          axis.title.x = element_blank(),
+          text = element_text(face = "bold"),
+          plot.title = element_text(hjust = 0.5, size = 42),
+          plot.subtitle = element_text(hjust = 0.5, size = 28)) +
+    geom_flow(width=0.45) +
+    geom_stratum(color = NA, width=0.45) +
+    scale_fill_identity() +
+    ggtitle(TITLE) +
+    labs(subtitle = paste0("\nCAMPAÑA ", min(as.character(DATABASE$CAMPANA)),
+                           " - CAMPAÑA ", max(as.character(DATABASE$CAMPANA)))) +
+    geom_text(stat = "stratum", fontface = "bold", color = "black", size=5)
+
+  png(PATH_FILE, width=4500, height=3000, res=300)
+  plot(plot_sankey)
+  dev.off()
+  #ggsave(paste(cwd,"/PER_EVOL_SALES_201909.png", sep=""), height = 10, width = 15)
+}
