@@ -2,28 +2,27 @@
 #'
 #' This package gather several visualization designs which representation lets make quick analysis and consequently take better decisions in business.
 #'
-#' @param DF_TOTAL
-#' @param CAMPANA_ANALISIS
-#' @param PAIS
-#' @param EXPORTAR
-#' @param RUTA
-#' @param DATABASE
-#' @param INTERV
-#' @param TITLE
-#' @param PATH_FILE
+#' @param df_base
+#' @param campana
+#' @param lugar
+#' @param exportar
+#' @param ruta
+#' @param interv
+#' @param titulo
+#' @param linea
 #'
 #' @export
 #' @examples
 
 
-calc_performance <- function(DF_TOTAL, PAIS, EXPORTAR, RUTA){
+calc_performance <- function(df_base, lugar, exportar, ruta){
 
-  n_prod_total <- nrow(DF_TOTAL)
-  DF_DLT <- DF_TOTAL[(complete.cases(DF_TOTAL)==F | DF_TOTAL$REAL==0), ]
-  DF_TOTAL <- DF_TOTAL[(complete.cases(DF_TOTAL)==F | DF_TOTAL$REAL==0)==F, ]
-  n_prod_compl <- nrow(DF_TOTAL)
+  n_prod_total <- nrow(df_base)
+  df_dlt <- df_base[(complete.cases(df_base)==F | df_base$REAL==0), ]
+  df_base <- df_base[(complete.cases(df_base)==F | df_base$REAL==0)==F, ]
+  n_prod_compl <- nrow(df_base)
 
-  n_models <- ncol(DF_TOTAL)-5
+  n_models <- ncol(df_base)-5
 
   INT_LAB <- data.frame(INT = levels(cut(0, breaks = c(0,
                                                        0.5,
@@ -39,8 +38,8 @@ calc_performance <- function(DF_TOTAL, PAIS, EXPORTAR, RUTA){
                                 "e) 180 - 250%",
                                 "f) > 250%"))
 
-  DF1 <- data.frame(DF_TOTAL,
-                    ASERT = DF_TOTAL$REAL / DF_TOTAL[, 6:(5+n_models)])
+  DF1 <- data.frame(df_base,
+                    ASERT = df_base$REAL / df_base[, 6:(5+n_models)])
 
   DF1 <- data.frame(DF1,
                     INTERV = apply(DF1[, (6+n_models):(5 + 2*n_models)],
@@ -115,8 +114,8 @@ calc_performance <- function(DF_TOTAL, PAIS, EXPORTAR, RUTA){
                                 "f) 180 - 250%",
                                 "g) > 250%"))
 
-  DF1 <- data.frame(DF_TOTAL,
-                    ASERT = DF_TOTAL$REAL / DF_TOTAL[, 6:(5+n_models)])
+  DF1 <- data.frame(df_base,
+                    ASERT = df_base$REAL / df_base[, 6:(5+n_models)])
 
   DF1 <- data.frame(DF1,
                     INTERV = apply(DF1[, (6+n_models):(5 + 2*n_models)],
@@ -184,31 +183,31 @@ calc_performance <- function(DF_TOTAL, PAIS, EXPORTAR, RUTA){
                                                         "g) > 250%"))
 
   X_RESULTADO <- list()
-  X_RESULTADO[["DF_TOTAL"]] <- DF_TOTAL
-  X_RESULTADO[["DF_DLT"]] <- DF_DLT
+  X_RESULTADO[["DF_TOTAL"]] <- df_base
+  X_RESULTADO[["DF_DTL"]] <- df_dlt
   X_RESULTADO[["ASERT_NOM"]] <- DFAN
   X_RESULTADO[["ASERT_PCT"]] <- DFAP
   X_RESULTADO[["CANT_SYF"]] <- DFQ
   X_RESULTADO[["CONS_ASERT"]] <- DF1X
 
-  print(paste("Productos totales ingresados:", nrow(DF_TOTAL), sep=" "))
-  print(paste("Productos incompletos eliminados:", nrow(DF_DLT), sep=" "))
+  print(paste("Productos totales ingresados:", nrow(df_base), sep=" "))
+  print(paste("Productos incompletos eliminados:", nrow(df_dlt), sep=" "))
 
   library(openxlsx)
 
 
-  if(EXPORTAR==1){
+  if(exportar==1){
 
-    write.xlsx(x = DF1X, file = paste(RUTA, "/", PAIS, "_", "CONS_ASERT.xlsx", sep=""), sheetName = "DATOS", col.names = T, row.names = F)
+    write.xlsx(x = DF1X, file = paste(ruta, "/", lugar, "_", "CONS_ASERT.xlsx", sep=""), sheetName = "DATOS", col.names = T, row.names = F)
 
   }
 
   print(DFAP)
   print(DFQ)
 
-  if (nrow(DF_DLT)!=0){
-    write.xlsx(x = DF_DLT, file = paste(RUTA, "/", PAIS, "_", "DATA_ELIMI.xlsx", sep=""), sheetName = "DATOS", col.names = T, row.names = F)
-    print(DF_DLT)
+  if (nrow(df_dlt)!=0){
+    write.xlsx(x = df_dlt, file = paste(ruta, "/", lugar, "_", "DATA_ELIMI.xlsx", sep=""), sheetName = "DATOS", col.names = T, row.names = F)
+    print(df_dlt)
 
   }
 
@@ -218,10 +217,10 @@ calc_performance <- function(DF_TOTAL, PAIS, EXPORTAR, RUTA){
 
 
 
-plot_performance <- function(CONSOLIDADO, LA_CAMP, LINEA, PAIS, EXPORTAR, RUTA){
+plot_performance <- function(df_base, campana, linea, lugar, exportar, ruta){
 
-  DFAP <- CONSOLIDADO[["ASERT_PCT"]]
-  DFAP <- DFAP[DFAP$LINEA == LINEA,]
+  DFAP <- df_base[["ASERT_PCT"]]
+  DFAP <- DFAP[DFAP$LINEA == linea,]
 
   library(ggplot2)
 
@@ -232,7 +231,7 @@ plot_performance <- function(CONSOLIDADO, LA_CAMP, LINEA, PAIS, EXPORTAR, RUTA){
                       "#FF7F00",
                       "#999999")
 
-  plot_DFAP <- ggplot(DFAP[DFAP$CAMPANA == LA_CAMP,],
+  plot_DFAP <- ggplot(DFAP[DFAP$CAMPANA == campana,],
                       aes(x = ASERTIVIDAD,
                           y = PRODUCTOS,
                           group = MODELO,
@@ -262,11 +261,11 @@ plot_performance <- function(CONSOLIDADO, LA_CAMP, LINEA, PAIS, EXPORTAR, RUTA){
     legend.text = element_text(size = 12),
     legend.position = "bottom") +
     ggtitle(paste("Distribución de productos según asertividad \n",
-                  LINEA,
+                  linea,
                   " ",
-                  LA_CAMP,
+                  campana,
                   " - ",
-                  PAIS,
+                  lugar,
                   sep = "")) +
     xlab("Asertividad") +
     ylab("Productos") +
@@ -278,8 +277,8 @@ plot_performance <- function(CONSOLIDADO, LA_CAMP, LINEA, PAIS, EXPORTAR, RUTA){
     facet_grid(~MODELO) +
     guides(fill=guide_legend(nrow=2, byrow=T))
 
-  DFQ <- CONSOLIDADO[["CANT_SYF"]]
-  DFQ <- DFQ[DFQ$LINEA==LINEA,]
+  DFQ <- df_base[["CANT_SYF"]]
+  DFQ <- DFQ[DFQ$LINEA==linea,]
 
   col_asertividad2 = c("#E41A1C",
                        "#377EB8",
@@ -291,7 +290,7 @@ plot_performance <- function(CONSOLIDADO, LA_CAMP, LINEA, PAIS, EXPORTAR, RUTA){
 
   options(scipen=100000)
 
-  plot_DFQ <- ggplot(DFQ[DFQ$CAMPANA == LA_CAMP,], aes(x = ASERTIVIDAD,
+  plot_DFQ <- ggplot(DFQ[DFQ$CAMPANA == campana,], aes(x = ASERTIVIDAD,
                                                        y = DIFERENCIA,
                                                        fill = ASERTIVIDAD,
                                                        label = DIFERENCIA)) +
@@ -316,11 +315,11 @@ plot_performance <- function(CONSOLIDADO, LA_CAMP, LINEA, PAIS, EXPORTAR, RUTA){
     legend.text = element_text(size = 12),
     legend.position = "bottom") +
     ggtitle(paste("Distribución de sobrantes / faltantes según asertividad \n",
-                  LINEA,
+                  linea,
                   " ",
-                  LA_CAMP,
+                  campana,
                   " - ",
-                  PAIS,
+                  lugar,
                   sep = "")) +
     xlab("Asertividad") +
     ylab("Diferencia (unidades)") +
@@ -335,14 +334,14 @@ plot_performance <- function(CONSOLIDADO, LA_CAMP, LINEA, PAIS, EXPORTAR, RUTA){
     guides(fill=guide_legend(nrow=2, byrow=T))
 
 
-  if(EXPORTAR==1){
+  if(exportar==1){
 
-    png(paste(RUTA, "/", PAIS, "_", substr(LINEA, 1,2), "_ASERT_", LA_CAMP, ".png", sep=""),
+    png(paste(ruta, "/", lugar, "_", substr(linea, 1,2), "_ASERT_", campana, ".png", sep=""),
         width=1700, height=1200, res=220)
     plot(plot_DFAP)
     dev.off()
 
-    png(paste(RUTA, "/", PAIS, "_", substr(LINEA, 1,2), "_DIFER_", LA_CAMP, ".png", sep=""),
+    png(paste(ruta, "/", lugar, "_", substr(linea, 1,2), "_DIFER_", campana, ".png", sep=""),
         width=1700, height=1200, res=220)
     plot(plot_DFQ)
     dev.off()
@@ -356,28 +355,29 @@ plot_performance <- function(CONSOLIDADO, LA_CAMP, LINEA, PAIS, EXPORTAR, RUTA){
 
 
 
-AccyAnalysis <- function(DF_TOTAL, CAMPANA_ANALISIS, PAIS, EXPORTAR, RUTA){
+AccyAnalysis <- function(df_base, campana, lugar, exportar, ruta){
 
-  DF_CAMP <- DF_TOTAL[DF_TOTAL$CODI_CAMP == CAMPANA_ANALISIS,]
+  df_camp <- df_base[df_base$CODI_CAMP == campana,]
 
-  consolidado_res <- calc_performance(DF_CAMP, PAIS, EXPORTAR, RUTA)
+  consolidado_res <- calc_performance(df_camp, lugar, exportar, ruta)
 
-  NOMB_LINES <- levels(unique(DF_CAMP$NOMB_LINE))
+  nomb_lines <- levels(unique(df_camp$NOMB_LINE))
 
-  for (i in NOMB_LINES){
+  for (i in nomb_lines){
 
-    plot_performance(consolidado_res, CAMPANA_ANALISIS, i, PAIS, EXPORTAR, RUTA)
+    plot_performance(consolidado_res, campana, i, lugar, exportar, ruta)
 
   }
 
   return(consolidado_res)
 
 }
+
 # DATA_ASERT <- RESULTS$CONS_ASERT
 #
-# if(nrow(RESULTS$DF_DLT)>0){
+# if(nrow(RESULTS$df_dlt)>0){
 #
-#   DATA_ELIMI <- RESULTS$DF_DLT
+#   DATA_ELIMI <- RESULTS$df_dlt
 #
 # }
 
@@ -385,28 +385,28 @@ AccyAnalysis <- function(DF_TOTAL, CAMPANA_ANALISIS, PAIS, EXPORTAR, RUTA){
 
 #purl("1. Performance_Modelo_General.Rmd")
 
-SankeyDiagram <- function(DATABASE, INTERV, TITLE, PATH_FILE){
+SankeyDiagram <- function(df_base, interv, titulo, ruta){
 
   library(ggalluvial)
   library(RColorBrewer)
   library(dplyr)
 
-  n_int <- length(INTERV) + 1
-  INTERV <- c(0, INTERV, Inf)
-  DATABASE$INTERVAL <- cut(DATABASE$VENTA.LINEA, b = INTERV)
+  n_int <- length(interv) + 1
+  interv <- c(0, interv, Inf)
+  df_base$INTERVAL <- cut(df_base$VENTA.LINEA, b = interv)
 
-  LABELS <- data.frame(INTERVAL = sort(unique(DATABASE$INTERVAL)),
-                       LABEL = c(paste0("<", INTERV[2]/1000, "K"),
-                                 mapply(function(x,y) paste0(x/1000, "K-\n", y/1000, "K"), INTERV[2:(n_int-1)], INTERV[3:n_int]),
-                                 paste0(">", INTERV[n_int]/1000,"K")))
+  LABELS <- data.frame(INTERVAL = sort(unique(df_base$INTERVAL)),
+                       LABEL = c(paste0("<", interv[2]/1000, "K"),
+                                 mapply(function(x,y) paste0(x/1000, "K-\n", y/1000, "K"), interv[2:(n_int-1)], interv[3:n_int]),
+                                 paste0(">", interv[n_int]/1000,"K")))
 
-  DATABASE$INTERVAL <- LABELS$LABEL[match(DATABASE$INTERVAL, LABELS$INTERVAL)]
-  DATABASE$INTERVAL <- factor(DATABASE$INTERVAL, levels = as.character(LABELS$LABEL)[n_int:1])
+  df_base$INTERVAL <- LABELS$LABEL[match(df_base$INTERVAL, LABELS$INTERVAL)]
+  df_base$INTERVAL <- factor(df_base$INTERVAL, levels = as.character(LABELS$LABEL)[n_int:1])
 
 
-  DB_1 <- data.frame(id = DATABASE[,2],
-                     round = DATABASE[,1],
-                     episode = DATABASE[,4])
+  DB_1 <- data.frame(id = df_base[,2],
+                     round = df_base[,1],
+                     episode = df_base[,4])
   colortable<- data.frame(episode = unique(DB_1$episode)[c(order(as.character(unique(DB_1$episode)))[1],
                                                            order(as.character(unique(DB_1$episode)))[order(trimws(gsub("[[:punct:]]", "", as.character(unique(DB_1$episode))[order(as.character(unique(DB_1$episode)))[-c(1,2)]])))+2],
                                                            order(as.character(unique(DB_1$episode)))[2])],
@@ -428,12 +428,12 @@ SankeyDiagram <- function(DATABASE, INTERV, TITLE, PATH_FILE){
     geom_flow(width=0.45) +
     geom_stratum(color = NA, width=0.45) +
     scale_fill_identity() +
-    ggtitle(TITLE) +
-    labs(subtitle = paste0("\nCAMPAÑA ", min(as.character(DATABASE$CAMPANA)),
-                           " - CAMPAÑA ", max(as.character(DATABASE$CAMPANA)))) +
+    ggtitle(titulo) +
+    labs(subtitle = paste0("\nCAMPAÑA ", min(as.character(df_base$CAMPANA)),
+                           " - CAMPAÑA ", max(as.character(df_base$CAMPANA)))) +
     geom_text(stat = "stratum", fontface = "bold", color = "black", size=5)
 
-  png(PATH_FILE, width=4500, height=3000, res=300)
+  png(ruta, width=4500, height=3000, res=300)
   plot(plot_sankey)
   dev.off()
   #ggsave(paste(cwd,"/PER_EVOL_SALES_201909.png", sep=""), height = 10, width = 15)
