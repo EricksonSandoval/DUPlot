@@ -78,12 +78,19 @@ calc_performance <- function(DF_TOTAL, PAIS, EXPORTAR, RUTA){
                     DFA,
                     FUN = length)
 
+
   colnames(DFAN) <- c("CAMPANA",
                       "LINEA",
                       "ASERTIVIDAD",
                       "MODELO",
                       "CODI_VENT")
 
+  DFAN$ASERTIVIDAD <- factor(DFAN$ASERTIVIDAD, levels = c("a) 0 - 50%",
+                                                          "b) 50 - 80%",
+                                                          "c) 80 - 120%",
+                                                          "d) 120 - 180%",
+                                                          "e) 180 - 250%",
+                                                          "f) > 250%"))
   library(dplyr)
 
   DFAP1 <- group_by(DFAN, paste(CAMPANA, LINEA, MODELO)) %>% mutate(PRODUCTOS=CODI_VENT/sum(CODI_VENT))
@@ -168,6 +175,14 @@ calc_performance <- function(DF_TOTAL, PAIS, EXPORTAR, RUTA){
 
   DFQ <- aggregate(DIFERENCIA ~ ASERTIVIDAD+MODELO+LINEA+CAMPANA, DFQ, FUN=sum)
 
+  DFQ$ASERTIVIDAD <- factor(DFQ$ASERTIVIDAD, levels = c("a) 0 - 50%",
+                                                        "b) 50 - 80%",
+                                                        "c) 80 - 100%",
+                                                        "d) 100 - 120%",
+                                                        "e) 120 - 180%",
+                                                        "f) 180 - 250%",
+                                                        "g) > 250%"))
+
   X_RESULTADO <- list()
   X_RESULTADO[["DF_TOTAL"]] <- DF_TOTAL
   X_RESULTADO[["DF_DLT"]] <- DF_DLT
@@ -206,25 +221,16 @@ calc_performance <- function(DF_TOTAL, PAIS, EXPORTAR, RUTA){
 plot_performance <- function(CONSOLIDADO, LA_CAMP, LINEA, PAIS, EXPORTAR, RUTA){
 
   DFAP <- CONSOLIDADO[["ASERT_PCT"]]
-  LAB_1 <- sort(unique(DFAP$ASERTIVIDAD))
   DFAP <- DFAP[DFAP$LINEA == LINEA,]
 
   library(ggplot2)
 
-  INT_COL_1 <- data.frame(LAB = c("a) 0 - 50%",
-                                  "b) 50 - 80%",
-                                  "c) 80 - 120%",
-                                  "d) 120 - 180%",
-                                  "e) 180 - 250%",
-                                  "f) > 250%"),
-                          COLOR = c("#E41A1C",
-                                    "#377EB8",
-                                    "#4DAF4A",
-                                    "#984EA3",
-                                    "#FF7F00",
-                                    "#999999"))
-
-  col_asertividad = as.character(INT_COL_1$COLOR[match(LAB_1, INT_COL_1$LAB)])
+  col_asertividad = c("#E41A1C",
+                      "#377EB8",
+                      "#4DAF4A",
+                      "#984EA3",
+                      "#FF7F00",
+                      "#999999")
 
   plot_DFAP <- ggplot(DFAP[DFAP$CAMPANA == LA_CAMP,],
                       aes(x = ASERTIVIDAD,
@@ -272,28 +278,16 @@ plot_performance <- function(CONSOLIDADO, LA_CAMP, LINEA, PAIS, EXPORTAR, RUTA){
     facet_grid(~MODELO) +
     guides(fill=guide_legend(nrow=2, byrow=T))
 
-
   DFQ <- CONSOLIDADO[["CANT_SYF"]]
-  LAB_2 <- sort(unique(DFQ$ASERTIVIDAD))
   DFQ <- DFQ[DFQ$LINEA==LINEA,]
 
-
-  INT_COL_2 <- data.frame(LAB = c("a) 0 - 50%",
-                                  "b) 50 - 80%",
-                                  "c) 80 - 100%",
-                                  "d) 100 - 120%",
-                                  "e) 120 - 180%",
-                                  "f) 180 - 250%",
-                                  "g) > 250%"),
-                          COLOR = c("#E41A1C",
-                                    "#377EB8",
-                                    "#4DAF4A",
-                                    "#4DAF4A",
-                                    "#984EA3",
-                                    "#FF7F00",
-                                    "#999999"))
-
-  col_asertividad2 = as.character(INT_COL_2$COLOR[match(LAB_2, INT_COL_2$LAB)])
+  col_asertividad2 = c("#E41A1C",
+                       "#377EB8",
+                       "#4DAF4A",
+                       "#4DAF4A",
+                       "#984EA3",
+                       "#FF7F00",
+                       "#999999")
 
   options(scipen=100000)
 
@@ -390,9 +384,6 @@ AccyAnalysis <- function(DF_TOTAL, CAMPANA_ANALISIS, PAIS, EXPORTAR, RUTA){
 #library(knitr)
 
 #purl("1. Performance_Modelo_General.Rmd")
-
-
-
 
 SankeyDiagram <- function(DATABASE, INTERV, TITLE, PATH_FILE){
 

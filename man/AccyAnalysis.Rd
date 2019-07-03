@@ -16,7 +16,7 @@ AccyAnalysis(df_base, campana, lugar, exportar, ruta)
       \item 3) CODI_VENT: codigo de venta del SKU (ej. 123456)
       \item 4) DESCRIPCION: nombre del SKU
       \item 5) REAL: demanda real del SKU
-      \item 6..) Desde esta columna, se agregan pronósticos a analizar (ej. "RG3", "MOD")
+      \item 6..) Desde esta columna, se agregan pronósticos a comparar frente a la cantidad real (ej. "RG3", "MOD")
       }
   \item{campana}{la campana seleccionada para el análisis}
   \item{lugar}{los 3 caracteres que representa el lugar (ej. "PER")}
