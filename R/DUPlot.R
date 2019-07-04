@@ -385,7 +385,7 @@ AccyAnalysis <- function(df_base, campana, lugar, exportar, ruta){
 
 #purl("1. Performance_Modelo_General.Rmd")
 
-SankeyDiagram <- function(df_base, interv, titulo, exportar, ruta){
+SankeyTimeSeries <- function(df_base, interv, titulo, exportar, ruta){
 
   library(ggalluvial)
   library(RColorBrewer)
@@ -421,7 +421,7 @@ SankeyDiagram <- function(df_base, interv, titulo, exportar, ruta){
                                       fill = color, label = episode)) +
     theme(panel.background = element_blank(),
           axis.ticks = element_blank(),
-          axis.text.x = element_text(size=18),
+          axis.text.x = element_text(size=20),
           axis.text.y = element_blank(),
           axis.title.x = element_blank(),
           text = element_text(face = "bold"),
