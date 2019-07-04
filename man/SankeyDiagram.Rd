@@ -27,11 +27,11 @@ DF_TOTAL <- data.frame(CAMPANA = rep(201901:201908, times=200),
                        VENTA = ceiling(rep(runif(200, 100000, 300000),
                                            each=8,
                                            len=1600) *
-                                       rnorm(1600,0.8,0.2)))
+                                       rnorm(1600,0.9,0.12)))
 
 ## realizar analisis
 SankeyDiagram(DF_TOTAL,
-              quantile(DF_TOTAL$VENTA, c(0.2,0.5,0.8)),
+              ceiling(quantile(DF_TOTAL$VENTA, c(0.1,0.5,0.9))/1000)*1000,
               "Evolución de venta acumulada por zona",
               0,
               "")
