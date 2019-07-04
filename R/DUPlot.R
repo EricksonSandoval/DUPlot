@@ -393,7 +393,7 @@ SankeyDiagram <- function(df_base, interv, titulo, exportar, ruta){
 
   n_int <- length(interv) + 1
   interv <- c(0, interv, Inf)
-  df_base$INTERVAL <- cut(df_base$VENTA.LINEA, b = interv)
+  df_base$INTERVAL <- cut(df_base[,3], b = interv)
 
   LABELS <- data.frame(INTERVAL = sort(unique(df_base$INTERVAL)),
                        LABEL = c(paste0("<", interv[2]/1000, "K"),
