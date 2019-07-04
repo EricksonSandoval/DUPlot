@@ -433,6 +433,8 @@ SankeyDiagram <- function(df_base, interv, titulo, exportar, ruta){
                            " - CAMPAÑA ", max(as.character(df_base$CAMPANA)))) +
     geom_text(stat = "stratum", fontface = "bold", color = "black", size=5)
 
+  print(plot_sankey)
+
   if(exportar==1){
 
   png(ruta, width=4500, height=3000, res=300)

@@ -33,8 +33,8 @@ DF_TOTAL <- data.frame(CAMPANA = rep(201901:201908, times=200),
 SankeyDiagram(DF_TOTAL,
               quantile(DF_TOTAL$VENTA, c(0.2,0.5,0.8)),
               "Evolución de venta acumulada por zona",
-              1,
-              ruta)
+              0,
+              "")
 }
 \keyword{accuracy}
 }
