@@ -385,7 +385,7 @@ AccyAnalysis <- function(df_base, campana, lugar, exportar, ruta){
 
 #purl("1. Performance_Modelo_General.Rmd")
 
-SankeyDiagram <- function(df_base, interv, titulo, ruta){
+SankeyDiagram <- function(df_base, interv, titulo, exportar, ruta){
 
   library(ggalluvial)
   library(RColorBrewer)
@@ -433,8 +433,13 @@ SankeyDiagram <- function(df_base, interv, titulo, ruta){
                            " - CAMPAÑA ", max(as.character(df_base$CAMPANA)))) +
     geom_text(stat = "stratum", fontface = "bold", color = "black", size=5)
 
+  if(exportar==1){
+
   png(ruta, width=4500, height=3000, res=300)
   plot(plot_sankey)
   dev.off()
+
+  }
+
   #ggsave(paste(cwd,"/PER_EVOL_SALES_201909.png", sep=""), height = 10, width = 15)
 }
