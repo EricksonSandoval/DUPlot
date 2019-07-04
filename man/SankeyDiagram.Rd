@@ -1,4 +1,3 @@
-\docType{function}
 \name{SankeyDiagram}
 \alias{SankeyDiagram}
 \title{Analizar evolución de individuos por intervalos definidos}
@@ -37,4 +36,3 @@ SankeyDiagram(DF_TOTAL,
               "")
 }
 \keyword{accuracy}
-}

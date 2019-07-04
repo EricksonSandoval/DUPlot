@@ -1,4 +1,3 @@
-\docType{function}
 \name{AccyAnalysis}
 \alias{AccyAnalysis}
 \title{Analizar modelos basados en la asertividad del pronóstico}
@@ -38,4 +37,4 @@ AccyAnalysis(DF_TOTAL, 201901, "PER", 0, "")
 
 }
 \keyword{accuracy}
-}
+
