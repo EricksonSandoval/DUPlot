@@ -1,11 +1,11 @@
-\name{SankeyDiagram}
-\alias{SankeyDiagram}
+\name{SankeyTimeSeries}
+\alias{SankeyTimeSeries}
 \title{Analizar evolución de individuos por intervalos definidos}
 \description{
 Este paquete determina el cambio de los individuos a través del tiempo en función a una variable cuantitativa. Se utiliza un diagrama de barras con flujos comunmente conocido como diagrama de Sankey.
 }
 \usage{
-SankeyDiagram(df_base, interv, titulo, exportar, ruta)
+SankeyTimeSeries(df_base, interv, titulo, exportar, ruta)
 }
 \arguments{
   \item{df_base}{la base de datos para el análisis, constituida por las columnas:}
@@ -29,7 +29,7 @@ DF_TOTAL <- data.frame(CAMPANA = rep(201901:201908, times=200),
                                        rnorm(1600,0.9,0.12)))
 
 ## realizar analisis
-SankeyDiagram(DF_TOTAL,
+SankeyTimeSeries(DF_TOTAL,
               ceiling(quantile(DF_TOTAL$VENTA, c(0.1,0.5,0.9))/1000)*1000,
               "Evolución de venta acumulada por zona",
               0,
