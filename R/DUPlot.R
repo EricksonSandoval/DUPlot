@@ -391,6 +391,8 @@ SankeyDiagram <- function(df_base, interv, titulo, exportar, ruta){
   library(RColorBrewer)
   library(dplyr)
 
+  df_base[,1] <- as.character(df_base[,1])
+
   n_int <- length(interv) + 1
   interv <- c(0, interv, Inf)
   df_base$INTERVAL <- cut(df_base[,3], b = interv)
@@ -419,7 +421,7 @@ SankeyDiagram <- function(df_base, interv, titulo, exportar, ruta){
                                       fill = color, label = episode)) +
     theme(panel.background = element_blank(),
           axis.ticks = element_blank(),
-          axis.text.x = element_text(size=16),
+          axis.text.x = element_text(size=18),
           axis.text.y = element_blank(),
           axis.title.x = element_blank(),
           text = element_text(face = "bold"),
