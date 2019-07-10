@@ -357,17 +357,18 @@ plot_performance <- function(df_base, campana, linea, lugar, exportar, ruta){
 
 AccyAnalysis <- function(df_base, campana, lugar, exportar, ruta){
 
-  #df_camp <- df_base[df_base$CODI_CAMP == campana,]
-  df_camp <- df_base
+  consolidado_res <- calc_performance(df_base, lugar, exportar, ruta)
 
-  consolidado_res <- calc_performance(df_camp, lugar, exportar, ruta)
+  for (i in campana){
 
-  nomb_lines <- levels(unique(df_camp$NOMB_LINE))
+    df_camp <- df_base[df_base$CODI_CAMP == campana,]
+    nomb_lines <- levels(unique(df_camp$NOMB_LINE))
 
-  for (i in nomb_lines){
+    for (j in nomb_lines){
 
-    plot_performance(consolidado_res, campana, i, lugar, exportar, ruta)
+      plot_performance(consolidado_res, i, j, lugar, exportar, ruta)
 
+    }
   }
 
   return(consolidado_res)
