@@ -195,19 +195,19 @@ calc_performance <- function(df_base, lugar, exportar, ruta){
 
   library(openxlsx)
 
+  print(DFAP)
+  print(DFQ)
+
 
   if(exportar==1){
 
     write.xlsx(x = DF1X, file = paste(ruta, "/", lugar, "_", "CONS_ASERT.xlsx", sep=""), sheetName = "DATOS", col.names = T, row.names = F)
 
-  }
+    if (nrow(df_dlt)!=0){
+      write.xlsx(x = df_dlt, file = paste(ruta, "/", lugar, "_", "DATA_ELIMI.xlsx", sep=""), sheetName = "DATOS", col.names = T, row.names = F)
+      print(df_dlt)
 
-  print(DFAP)
-  print(DFQ)
-
-  if (nrow(df_dlt)!=0){
-    write.xlsx(x = df_dlt, file = paste(ruta, "/", lugar, "_", "DATA_ELIMI.xlsx", sep=""), sheetName = "DATOS", col.names = T, row.names = F)
-    print(df_dlt)
+    }
 
   }
 
@@ -357,7 +357,8 @@ plot_performance <- function(df_base, campana, linea, lugar, exportar, ruta){
 
 AccyAnalysis <- function(df_base, campana, lugar, exportar, ruta){
 
-  df_camp <- df_base[df_base$CODI_CAMP == campana,]
+  #df_camp <- df_base[df_base$CODI_CAMP == campana,]
+  df_camp <- df_base
 
   consolidado_res <- calc_performance(df_camp, lugar, exportar, ruta)
 
@@ -447,3 +448,72 @@ SankeyTimeSeries <- function(df_base, interv, titulo, exportar, ruta){
 
   #ggsave(paste(cwd,"/PER_EVOL_SALES_201909.png", sep=""), height = 10, width = 15)
 }
+
+
+
+SankeyPanel <- function(df_base, interv, titulo, exportar, ruta){
+
+  library(ggalluvial)
+  library(RColorBrewer)
+  library(dplyr)
+
+  df_base[,1] <- as.character(df_base[,1])
+
+  n_int <- length(interv) + 1
+  interv <- c(0, interv, Inf)
+  df_base$INTERVAL <- cut(df_base[,3], b = interv)
+
+  LABELS <- data.frame(INTERVAL = sort(unique(df_base$INTERVAL)),
+                       LABEL = c(paste0("<", interv[2]/1000, "K"),
+                                 mapply(function(x,y) paste0(x/1000, "K-\n", y/1000, "K"), interv[2:(n_int-1)], interv[3:n_int]),
+                                 paste0(">", interv[n_int]/1000,"K")))
+
+  df_base$INTERVAL <- LABELS$LABEL[match(df_base$INTERVAL, LABELS$INTERVAL)]
+  df_base$INTERVAL <- factor(df_base$INTERVAL, levels = as.character(LABELS$LABEL)[n_int:1])
+
+
+  DB_1 <- data.frame(id = df_base[,2],
+                     round = df_base[,1],
+                     episode = df_base[,4])
+  colortable<- data.frame(episode = unique(DB_1$episode)[c(order(as.character(unique(DB_1$episode)))[1],
+                                                           order(as.character(unique(DB_1$episode)))[order(trimws(gsub("[[:punct:]]", "", as.character(unique(DB_1$episode))[order(as.character(unique(DB_1$episode)))[-c(1,2)]])))+2],
+                                                           order(as.character(unique(DB_1$episode)))[2])],
+                          color = c(brewer.pal(6,"Dark2")[6], brewer.pal(9,"Set1")[c(3,4,5)[0:(n_int-3)]], brewer.pal(9,"Set1")[c(2,1)]),
+                          stringsAsFactors = FALSE)
+
+  DB_FINAL <- DB_1 %>% left_join(colortable, by="episode")
+
+  plot_sankey <- ggplot(DB_FINAL, aes(x = round, stratum = episode, alluvium = id,
+                                      fill = color, label = episode)) +
+    theme(panel.background = element_blank(),
+          axis.ticks = element_blank(),
+          axis.text.x = element_text(size=20),
+          axis.text.y = element_blank(),
+          axis.title.x = element_blank(),
+          text = element_text(face = "bold"),
+          plot.title = element_text(hjust = 0.5, size = 42),
+          plot.subtitle = element_text(hjust = 0.5, size = 28)) +
+    geom_flow(width=0.45) +
+    geom_stratum(color = NA, width=0.45) +
+    scale_fill_identity() +
+    ggtitle(titulo) +
+    labs(subtitle = paste0("\nCAMPAÑA ", min(as.character(df_base$CAMPANA)),
+                           " - CAMPAÑA ", max(as.character(df_base$CAMPANA)))) +
+    geom_text(stat = "stratum", fontface = "bold", color = "black", size=5)
+
+  if(exportar==1){
+
+    png(ruta, width=4500, height=3000, res=300)
+    plot(plot_sankey)
+    dev.off()
+
+  }
+
+  print(plot_sankey)
+
+  #ggsave(paste(cwd,"/PER_EVOL_SALES_201909.png", sep=""), height = 10, width = 15)
+}
+
+
+
+
