@@ -489,7 +489,7 @@ SankeyPanel <- function(df_base, titulo, exportar, ruta, label){
   df_base$INTERVAL <- LABELS$LABEL[match(df_base$INTERVAL, LABELS$INTERVAL)]
   df_base$INTERVAL <- factor(df_base$INTERVAL, levels = as.character(LABELS$LABEL)[n_int:1])
   df_base$GROUP <- factor(substr(df_base$MODELO,1,4), levels = unique(substr(df_base$MODELO,1,4)))
-  df_base$MODELO <- factor(substr(df_base$MODELO,6,8), levels = unique(substr(df_base$MODELO,6,8)))
+  df_base$MODELO <- factor(substr(df_base$MODELO,6,8), levels = c("RG3", "MOD", "MKT"))
 
 
   DB_1 <- data.frame(id = df_base[,2],
