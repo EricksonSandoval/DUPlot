@@ -5,7 +5,6 @@
 #' @param df_base
 #' @param campana
 #' @param lugar
-#' @param exportar
 #' @param ruta
 #' @param interv
 #' @param titulo
@@ -16,7 +15,7 @@
 #' @examples
 
 
-calc_performance <- function(df_base, lugar, exportar, ruta){
+calc_performance <- function(df_base, lugar, ruta=""){
 
   n_prod_total <- nrow(df_base)
   df_dlt <- df_base[(complete.cases(df_base)==F | df_base$REAL==0), ]
@@ -200,7 +199,7 @@ calc_performance <- function(df_base, lugar, exportar, ruta){
   print(DFQ)
 
 
-  if(exportar==1){
+  if(ruta!=""){
 
     write.xlsx(x = DF1X, file = paste(ruta, "/", lugar, "_", "CONS_ASERT.xlsx", sep=""), sheetName = "DATOS", col.names = T, row.names = F)
 
@@ -218,7 +217,7 @@ calc_performance <- function(df_base, lugar, exportar, ruta){
 
 
 
-plot_performance <- function(df_base, campana, linea, lugar, exportar, ruta){
+plot_performance <- function(df_base, campana, linea, lugar, ruta=""){
 
   DFAP <- df_base[["ASERT_PCT"]]
   DFAP <- DFAP[DFAP$LINEA == linea,]
@@ -335,7 +334,7 @@ plot_performance <- function(df_base, campana, linea, lugar, exportar, ruta){
     guides(fill=guide_legend(nrow=2, byrow=T))
 
 
-  if(exportar==1){
+  if(ruta!=""){
 
     png(paste(ruta, "/", lugar, "_", substr(linea, 1,2), "_ASERT_", campana, ".png", sep=""),
         width=1700, height=1200, res=220)
@@ -356,18 +355,18 @@ plot_performance <- function(df_base, campana, linea, lugar, exportar, ruta){
 
 
 
-AccyAnalysis <- function(df_base, campana, lugar, exportar, ruta){
+AccyAnalysis <- function(df_base, campana, lugar, ruta=""){
 
   #df_camp <- df_base[df_base$CODI_CAMP == campana,]
   df_camp <- df_base
 
-  consolidado_res <- calc_performance(df_camp, lugar, exportar, ruta)
+  consolidado_res <- calc_performance(df_camp, lugar, ruta)
 
   nomb_lines <- levels(unique(df_camp$NOMB_LINE))
 
   for (i in nomb_lines){
 
-    plot_performance(consolidado_res, campana, i, lugar, exportar, ruta)
+    plot_performance(consolidado_res, campana, i, lugar, ruta)
 
   }
 
@@ -387,7 +386,7 @@ AccyAnalysis <- function(df_base, campana, lugar, exportar, ruta){
 
 #purl("1. Performance_Modelo_General.Rmd")
 
-SankeyTimeSeries <- function(df_base, interv, titulo, exportar, ruta){
+SankeyTimeSeries <- function(df_base, interv, titulo, ruta=""){
 
   library(ggalluvial)
   library(RColorBrewer)
@@ -437,7 +436,7 @@ SankeyTimeSeries <- function(df_base, interv, titulo, exportar, ruta){
                            " - CAMPAÑA ", max(as.character(df_base$CAMPANA)))) +
     geom_text(stat = "stratum", fontface = "bold", color = "black", size=5)
 
-  if(exportar==1){
+  if(ruta!=""){
 
     png(ruta, width=4500, height=3000, res=300)
     plot(plot_sankey)
@@ -452,7 +451,11 @@ SankeyTimeSeries <- function(df_base, interv, titulo, exportar, ruta){
 
 
 
-SankeyPanel <- function(df_base, titulo, exportar, ruta, label){
+SankeyPanel <- function(df_base, titulo, ruta="", label=c(ANTI = "ANTICIPO2",
+                                                                 PADV = "PREPEDIDO ADV2",
+                                                                 ADVC = "ADVANCE - NACIONAL2",
+                                                                 PNAC = "PREPEDIDO NAC2",
+                                                                 PEDI = "PEDIDO NAC2")){
 
   library(ggalluvial)
   library(RColorBrewer)
@@ -529,7 +532,7 @@ SankeyPanel <- function(df_base, titulo, exportar, ruta, label){
     )
   #+geom_text(stat = "stratum", fontface = "bold", color = "black", size=5)
 
-  if(exportar==1){
+  if(ruta!=""){
 
     png(ruta, width=4500, height=2500, res=300)
     plot(plot_sankey)

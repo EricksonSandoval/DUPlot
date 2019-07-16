@@ -5,7 +5,7 @@
 Este paquete segmenta productos según su asertividad del pronóstico en el modelo analizado y genera gráficos relacionados al desempeño general y las cantidades de los "sobrantes / faltantes" (errores absolutos).
 }
 \usage{
-AccyAnalysis(df_base, campana, lugar, exportar, ruta)
+AccyAnalysis(df_base, campana, lugar, ruta="")
 }
 \arguments{
   \item{df_base}{la base de datos para el análisis, constituida por las columnas:}
@@ -19,8 +19,7 @@ AccyAnalysis(df_base, campana, lugar, exportar, ruta)
       }
   \item{campana}{la campaña seleccionada para el análisis}
   \item{lugar}{los 3 caracteres que representa el lugar (ej. "PER")}
-  \item{exportar}{valor binario (1: para exportar, 0: no exportar)}
-  \item{ruta}{el directorio donde se exportan los archivos. Si no se exporta solo incluir una cadena vacía \code{""}}
+  \item{ruta}{el directorio donde se exportan los archivos, si se requiere}
 }
 \examples{
 ## Base de datos generada
@@ -33,7 +32,7 @@ DF_TOTAL <- data.frame(CODI_CAMP = 201901,
                        MOD = 1000+(1:100)*40 + rnorm(100,100,700))
 
 ## realizar analisis
-AccyAnalysis(DF_TOTAL, 201901, "PER", 0, "")
+AccyAnalysis(DF_TOTAL, 201901, "PER")
 
 }
 \keyword{accuracy}

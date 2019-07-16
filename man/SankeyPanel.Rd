@@ -5,7 +5,7 @@
 Este paquete determina los cambios en los intervalos de asertividad que se dieron para cada producto según el modelo utilizado. Se muestra un diagrama de barras con flujos comunmente conocido como diagrama de Sankey.
 }
 \usage{
-SankeyPanel(df_base, interv, titulo, exportar, ruta)
+SankeyPanel(df_base, titulo, ruta="")
 }
 \arguments{
   \item{df_base}{la base de datos para el análisis, constituida por las columnas:}
@@ -17,7 +17,7 @@ SankeyPanel(df_base, interv, titulo, exportar, ruta)
   \item{interv}{los valores que determinan los intervalos; se recomienda utilizar percentiles representativos (ej. \code{c(10,50,90)}}
   \item{titulo}{texto en la posición superior de la grafica}
   \item{exportar}{valor binario (1: para exportar, 0: no exportar)}
-  \item{ruta}{el directorio donde se exportan los archivos. Si no se exporta solo incluir una cadena vacía \code{""}}
+  \item{ruta}{el directorio donde se exportan los archivos, si se requiere}
 }
 \examples{
 ## Base de datos generada
@@ -44,9 +44,6 @@ colnames(DF_TOTAL) <- c("CAMPANA", "COD_PROD",
 
 ## realizar analisis
 SankeyPanel(DF_TOTAL,
-            c(0.5,0.8,1.2,1.8,2.5),
-            "Comparativo de la asertividad entre modelos de pronóstico",
-            0,
-            "")
+            "Comparativo de la asertividad entre modelos de pronóstico")
 }
 \keyword{accuracy}
