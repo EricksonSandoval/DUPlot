@@ -451,12 +451,11 @@ SankeyTimeSeries <- function(df_base, interv, titulo, ruta=""){
 
 
 
-SankeyPanel <- function(df_base, titulo, ruta="", label=c(ANTI = "ANTICIPO2",
-                                                                 PADV = "PREPEDIDO ADV2",
-                                                                 ADVC = "ADVANCE - NACIONAL2",
-                                                                 PNAC = "PREPEDIDO NAC2",
-                                                                 PEDI = "PEDIDO NAC2")){
-
+SankeyPanel <- function(df_base, titulo, ruta="", label=c(ANTI = "ANTICIPO",
+                                                                 PADV = "PREPEDIDO ADV",
+                                                                 ADVC = "ADVANCE - NACIONAL",
+                                                                 PNAC = "PREPEDIDO NAC",
+                                                                 PEDI = "PEDIDO NAC")){
   library(ggalluvial)
   library(RColorBrewer)
   library(dplyr)
