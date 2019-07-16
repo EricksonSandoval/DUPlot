@@ -42,6 +42,8 @@ colnames(DF_TOTAL) <- c("CAMPANA", "COD_PROD",
                         "PEDI_RG3",	"PEDI_MOD",
                         "CANT_REA")
 
+DF_TOTAL <- DF_TOTAL[DF_TOTAL == 201902,]
+
 ## realizar analisis
 SankeyPanel(DF_TOTAL,
             "Comparativo de la asertividad entre modelos de pronóstico")
