@@ -10,6 +10,7 @@
 #' @param interv
 #' @param titulo
 #' @param linea
+#' @param label
 #'
 #' @export
 #' @examples
