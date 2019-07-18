@@ -54,7 +54,7 @@ calc_performance <- function(df_base, lugar, ruta=""){
                                                                  INT_LAB$INT)]}))
 
   DF1 <- data.frame(DF1,
-                    DIF_CANT = ceiling((DF1[, 6:(5 + n_models)] - DF1$REAL)/10)*10)
+                    DIF_CANT = DF1[, 6:(5 + n_models)] - DF1$REAL)
 
   DF1X <- DF1
 
@@ -132,7 +132,7 @@ calc_performance <- function(df_base, lugar, ruta=""){
                                                                  INT_LAB$INT)]}))
 
   DF1 <- data.frame(DF1,
-                    DIF_CANT = ceiling((DF1[, 6:(5 + n_models)] - DF1$REAL)/10)*10)
+                    DIF_CANT = DF1[, 6:(5 + n_models)] - DF1$REAL)
 
 
   DFQ <- DF1[,c(1, 2, (6 + 2 * n_models):(5 + 3 * n_models),
@@ -323,7 +323,7 @@ plot_performance <- function(df_base, campana, linea, lugar, ruta=""){
                   sep = "")) +
     xlab("Asertividad") +
     ylab("Diferencia (unidades)") +
-    geom_text(aes(label = format(abs(DIFERENCIA),
+    geom_text(aes(label = format(ceiling(abs(DIFERENCIA)/10)*10,
                                  digits=0)),
               size = 4.1,
               position = position_dodge(width = 0.95),
@@ -542,3 +542,5 @@ SankeyPanel <- function(df_base, titulo, ruta="", label=c(ANTI = "ANTICIPO",
   print(plot_sankey)
   #ggsave(paste(cwd,"/PER_EVOL_SALES_201909.png", sep=""), height = 10, width = 15)
 }
+
+
