@@ -8,8 +8,14 @@
 #' @param ruta
 #' @param interv
 #' @param titulo
+#' @param subtitulo
 #' @param linea
 #' @param label
+#' @param qvar
+#' @param freq
+#' @param plot.qvar
+#' @param show.lab
+#' @param umbral
 #'
 #' @export
 #' @examples
@@ -386,7 +392,7 @@ AccyAnalysis <- function(df_base, campana, lugar, ruta=""){
 
 #purl("1. Performance_Modelo_General.Rmd")
 
-SankeyTimeSeries <- function(df_base, interv, titulo, ruta=""){
+SankeyTimeSeries <- function(df_base, interv, titulo, linea="",ruta=""){
 
   library(ggalluvial)
   library(RColorBrewer)
@@ -403,17 +409,23 @@ SankeyTimeSeries <- function(df_base, interv, titulo, ruta=""){
                                  mapply(function(x,y) paste0(x/1000, "K-\n", y/1000, "K"), interv[2:(n_int-1)], interv[3:n_int]),
                                  paste0(">", interv[n_int]/1000,"K")))
 
+  LABELS <- data.frame(INTERVAL = sort(unique(df_base$INTERVAL)),
+                       LABEL = c(paste0("<",interv[2]*100, "%"),
+                                 mapply(function(x,y) paste0(x*100, "% - ", y*100, "%"), interv[2:(n_int-1)], interv[3:n_int]),
+                                 paste0(">",interv[n_int]*100,"%")))
+
+  df_base$otro <- df_base$INTERVAL
   df_base$INTERVAL <- LABELS$LABEL[match(df_base$INTERVAL, LABELS$INTERVAL)]
   df_base$INTERVAL <- factor(df_base$INTERVAL, levels = as.character(LABELS$LABEL)[n_int:1])
 
 
+
   DB_1 <- data.frame(id = df_base[,2],
                      round = df_base[,1],
-                     episode = df_base[,4])
-  colortable<- data.frame(episode = unique(DB_1$episode)[c(order(as.character(unique(DB_1$episode)))[1],
-                                                           order(as.character(unique(DB_1$episode)))[order(trimws(gsub("[[:punct:]]", "", as.character(unique(DB_1$episode))[order(as.character(unique(DB_1$episode)))[-c(1,2)]])))+2],
-                                                           order(as.character(unique(DB_1$episode)))[2])],
-                          color = c(brewer.pal(6,"Dark2")[6], brewer.pal(9,"Set1")[c(3,4,5)[0:(n_int-3)]], brewer.pal(9,"Set1")[c(2,1)]),
+                     episode = df_base[,4],
+                     interv = df_base[,5])
+  colortable<- data.frame(episode = unique(DB_1$episode)[order(unique(DB_1$interv))],
+                          color = c(c("#E41A1C","#377EB8")[min(2, 7-n_int):2], c("#4DAF4A","#984EA3")[0:min(2,n_int-2)], c("#FF7F00", "#999999")[min(2, max(1,6-n_int)):2]),
                           stringsAsFactors = FALSE)
 
   DB_FINAL <- DB_1 %>% left_join(colortable, by="episode")
@@ -426,19 +438,37 @@ SankeyTimeSeries <- function(df_base, interv, titulo, ruta=""){
           axis.text.y = element_blank(),
           axis.title.x = element_blank(),
           text = element_text(face = "bold"),
-          plot.title = element_text(hjust = 0.5, size = 42),
-          plot.subtitle = element_text(hjust = 0.5, size = 28)) +
+          plot.title = element_text(hjust = 0.5, size = 40),
+          plot.subtitle = element_text(hjust = 0.5, size = 27),
+          strip.text.x = element_text(size = 15),
+          legend.text = element_text(size = 20),
+          legend.title = element_text(size=24),
+          legend.position = "left")+
+    # theme(panel.background = element_blank(),
+    #       axis.ticks = element_blank(),
+    #       axis.text.x = element_text(size=20),
+    #       axis.text.y = element_blank(),
+    #       axis.title.x = element_blank(),
+    #       text = element_text(face = "bold"),
+    #       plot.title = element_text(hjust = 0.5, size = 42),
+    #       plot.subtitle = element_text(hjust = 0.5, size = 28)) +
     geom_flow(width=0.45) +
     geom_stratum(color = NA, width=0.45) +
-    scale_fill_identity() +
+    scale_fill_identity("ASERTIVIDAD",guide="legend", labels=colortable$episode[n_int:0], breaks=colortable$color[n_int:0]) +
     ggtitle(titulo) +
-    labs(subtitle = paste0("\nCAMPAÑA ", min(as.character(df_base$CAMPANA)),
-                           " - CAMPAÑA ", max(as.character(df_base$CAMPANA)))) +
-    geom_text(stat = "stratum", fontface = "bold", color = "black", size=5)
+    labs(subtitle = paste0("\n", linea," (CAMPAÑA ", min(as.character(df_base$CAMPANA)),
+                           " - CAMPAÑA ", max(as.character(df_base$CAMPANA)),")")) +
+    guides(fill=guide_legend(
+      keywidth=0.6,
+      keyheight=0.8,
+      default.unit="inch")
+    )
+  #+
+  #geom_text(stat = "stratum", fontface = "bold", color = "black", size=5)
 
   if(ruta!=""){
 
-    png(ruta, width=4500, height=3000, res=300)
+    png(ruta, width=5000, height=3000, res=300)
     plot(plot_sankey)
     dev.off()
 
@@ -541,6 +571,208 @@ SankeyPanel <- function(df_base, titulo, ruta="", label=c(ANTI = "ANTICIPO",
 
   print(plot_sankey)
   #ggsave(paste(cwd,"/PER_EVOL_SALES_201909.png", sep=""), height = 10, width = 15)
+}
+
+
+
+
+SankeyTimeSeriesQ <- function(df_base,
+                              interv,
+                              titulo,
+                              linea = "",
+                              ruta = "",
+                              qvar = "",
+                              freq = F,
+                              plot.qvar = (qvar!="")[1],
+                              show.lab = T){
+
+  library(ggrepel)
+  library(ggalluvial)
+  library(RColorBrewer)
+  library(dplyr)
+
+  df_base[,1] <- as.character(df_base[,1])
+  df_base <- df_base[df_base[,3]!=0,]
+
+  n_int <- length(interv) + 1
+  interv <- c(0, interv, Inf)
+  df_base$INTERVAL <- cut(df_base[,3], b = interv)
+
+  LABELS <- data.frame(INTERVAL = sort(levels(df_base$INTERVAL)),
+                       LABEL = c(paste0("<", interv[2]/1000, "K"),
+                                 mapply(function(x,y) paste0(x/1000, "K-\n", y/1000, "K"), interv[2:(n_int-1)], interv[3:n_int]),
+                                 paste0(">", interv[n_int]/1000,"K")))
+
+  LABELS <- data.frame(INTERVAL = sort(levels(df_base$INTERVAL)),
+                       LABEL = c(paste0("<",interv[2]*100, "%"),
+                                 mapply(function(x,y) paste0(x*100, "% - ", y*100, "%"), interv[2:(n_int-1)], interv[3:n_int]),
+                                 paste0(">",interv[n_int]*100,"%")))
+
+  df_base$otro <- df_base$INTERVAL
+  df_base$INTERVAL <- LABELS$LABEL[match(df_base$INTERVAL, LABELS$INTERVAL)]
+  df_base$INTERVAL <- factor(df_base$INTERVAL, levels = as.character(LABELS$LABEL)[n_int:1])
+
+
+
+  DB_1 <- data.frame(id = df_base[,2],
+                     round = df_base[,1],
+                     episode = df_base[,4],
+                     interv = df_base[,5],
+                     quantity = qvar)
+  colortable<- data.frame(episode = factor(unique(LABELS$LABEL), levels = as.character(LABELS$LABEL)[n_int:1]),
+                          color = c(c("#E41A1C","#377EB8")[min(2, 7-n_int):2], c("#4DAF4A","#3F8A38")[0:max(1,n_int-5)], c("#984EA3")[0:min(1,n_int-3)], c("#FF7F00", "#999999")[min(2, max(1,6-n_int)):2]))
+
+  DB_FINAL <- DB_1 %>% left_join(colortable, by="episode")
+
+
+  if(plot.qvar){
+    p <- ggplot(DB_FINAL, aes(x = round, y=quantity, stratum = episode, alluvium = id,
+                              fill = color, label=episode))
+  }
+  else{
+    p <- ggplot(DB_FINAL, aes(x = round, stratum = episode, alluvium = id,
+                              fill = color, label=episode))
+  }
+
+
+  plot_sankey <- p +
+    theme(panel.background = element_blank(),
+          axis.ticks = element_blank(),
+          axis.text.x = element_text(size=20),
+          axis.text.y = element_blank(),
+          axis.title = element_blank(),
+          text = element_text(face = "bold"),
+          plot.title = element_text(hjust = 0.5, size = 40),
+          plot.subtitle = element_text(hjust = 0.5, size = 27),
+          strip.text.x = element_text(size = 15),
+          legend.text = element_text(size = 20),
+          legend.title = element_text(size=24),
+          legend.position = "left")+
+    geom_flow(width=0.45) +
+    geom_stratum(color = NA, width=0.45) +
+    scale_fill_identity("ASERTIVIDAD",
+                        guide="legend",
+                        labels=colortable$episode[n_int:0],
+                        breaks=colortable$color[n_int:0],
+                        drop=F) +
+    ggtitle(titulo) +
+    labs(subtitle = paste0("\n", linea," (CAMPAÑA ", min(as.character(df_base$CAMPANA)),
+                           " - CAMPAÑA ", max(as.character(df_base$CAMPANA)),")")) +
+    guides(fill=guide_legend(
+      keywidth=0.6,
+      keyheight=0.8,
+      default.unit="inch")
+    )
+
+  if(show.lab){
+
+
+    plot_sankey <- plot_sankey + geom_label_repel(aes(label=sapply(1:nrow(df_base),function(x){ifelse((qvar!="")[1] & !freq, qvar[x], 1)})),
+                                                  stat = "stratum",
+                                                  fontface = "bold",
+                                                  color = "black",
+                                                  size = 5,
+                                                  nudge_y = 0,
+                                                  direction = "both",
+                                                  #hjust        = 1,
+                                                  vjust = -0.25,
+                                                  segment.size = 0.25,
+                                                  force = 1,
+                                                  show.legend = FALSE)
+  }
+
+  if(ruta != ""){
+
+    png(ruta, width = 5000, height = 3000, res = 300)
+    plot(plot_sankey)
+    dev.off()
+
+  }
+
+  print(plot_sankey)
+
+  #ggsave(paste(cwd,"/PER_EVOL_SALES_201909.png", sep=""), height = 10, width = 15)
+}
+
+
+
+ServiceLevel <- function(df_base,
+                         titulo,
+                         subtitulo="",
+                         ruta = "",
+                         show.lab = T,
+                         umbral = 0.95){
+  library(ggrepel)
+
+  labels <- colnames(df_base)[2:ncol(df_base)]
+
+  df_base$CAMP <- factor(paste0("C",substr(df_base$CAMP, 5, 6)),
+                         levels = paste0("C", sprintf("%02d", 1:18)) )
+
+  df_base <- reshape(df_base,
+                     direction="long",
+                     varying = list(2:ncol(df_base)),
+                     timevar = "ZONAS",
+                     v.names = "NIV_SERV")
+  df_base <- data.frame(CAMP = df_base$CAMP,
+                        ZONAS = labels[df_base$ZONAS],
+                        NIV_SERV = df_base$NIV_SERV)
+  df_base <- cbind(df_base,
+                   LAB = paste0(format(df_base[, ncol(df_base)]*100, digits=3), "%"))
+
+  plot_serlev <- ggplot(df_base, aes(x = CAMP, y = NIV_SERV, color= ZONAS, labels=LAB)) +
+    theme(panel.background = element_rect(fill = "white"),
+          axis.ticks = element_blank(),
+          axis.text = element_text(size=18),
+          axis.title = element_text(size=22, color = "gray28"),
+          panel.grid.major = element_line(color = "black", size=1),
+          text = element_text(face = "bold"),
+          plot.title = element_text(hjust = 0, size = 27, face = "bold.italic", color = "#636363"),
+          plot.subtitle = element_text(hjust = 1, size = 22, face = "bold.italic", color = "#636363"),
+          strip.text.x = element_text(size = 15),
+          axis.line = element_line(colour = "black", size=1.5),
+          legend.position = c(0.8845, 0.3),
+          legend.title = element_blank(),
+          legend.text = element_text(size=16),
+          legend.background = element_rect(fill="white",
+                                           size=1,
+                                           linetype="solid",
+                                           color="black"))+
+    geom_rect(xmin = 0, xmax = length(levels(df_base$CAMP))+1, ymin = 0.5, ymax = umbral, fill="#fac8bf",col="black", alpha=0.1) +
+    geom_rect(xmin = 0, xmax = length(levels(df_base$CAMP))+1, ymin = umbral, ymax = 2, fill="#99ffba",col="black", alpha=0.1) +
+    geom_point(aes(group = ZONAS), size=3.5) +
+    ggtitle(paste0(titulo," (", unique(substr(DF_TOTAL$CAMP,1,4)),")")) +
+    geom_line(aes(group = ZONAS), size=2) +
+    scale_x_discrete(drop=F) +
+    scale_y_continuous(limit=c(0.7, 1), expand = c(0,0), breaks=seq(0.7,1,0.05), labels = scales::percent_format(accuracy = 1L))+
+    scale_color_manual(values = c("#404040", "#0000b3")) +
+    xlab("\nCampañas") +
+    ylab("Nivel de Servicio") +
+    guides(color=guide_legend(
+      keywidth=0.6,
+      keyheight=0.5,
+      default.unit="inch"))
+
+  if(show.lab){
+
+    plot_serlev <- plot_serlev + geom_label_repel(aes(label=ifelse(CAMP == df_base$CAMP[length(df_base$CAMP)], as.character(LAB),""), size=5),
+                                                  direction = "y",
+                                                  hjust = 0,
+                                                  nudge_x = 0.2,
+                                                  show.legend = F)
+  }
+
+  if(subtitulo!=""){
+    plot_serlev <- plot_serlev + labs(subtitle = paste0(subtitulo))
+  }
+
+  if(ruta != ""){
+    png(ruta, width = 4200, height = 1800, res = 300)
+    plot(plot_serlev)
+    dev.off()
+  }
+
+  print(plot_serlev)
 }
 
 
