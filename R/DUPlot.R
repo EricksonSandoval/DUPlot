@@ -706,6 +706,8 @@ ServiceLevel <- function(df_base,
 
   labels <- colnames(df_base)[2:ncol(df_base)]
 
+  titulo_final <- paste0(titulo," (", unique(substr(df_base$CAMP,1,4)),")")
+
   df_base$CAMP <- factor(paste0("C",substr(df_base$CAMP, 5, 6)),
                          levels = paste0("C", sprintf("%02d", 1:18)) )
 
@@ -741,10 +743,10 @@ ServiceLevel <- function(df_base,
     geom_rect(xmin = 0, xmax = length(levels(df_base$CAMP))+1, ymin = 0.5, ymax = umbral, fill="#fac8bf",col="black", alpha=0.1) +
     geom_rect(xmin = 0, xmax = length(levels(df_base$CAMP))+1, ymin = umbral, ymax = 2, fill="#99ffba",col="black", alpha=0.1) +
     geom_point(aes(group = ZONAS), size=3.5) +
-    ggtitle(paste0(titulo," (", unique(substr(df_base$CAMP,1,4)),")")) +
+    ggtitle(titulo_final) +
     geom_line(aes(group = ZONAS), size=2) +
     scale_x_discrete(drop=F) +
-    scale_y_continuous(limit=c(0.7, 1), expand = c(0,0), breaks=seq(0.7,1,0.05), labels = scales::percent_format(accuracy = 1L))+
+    scale_y_continuous(limit=c(0.65, 1), expand = c(0,0), breaks=seq(0.65,1,0.05), labels = scales::percent_format(accuracy = 1L))+
     scale_color_manual(values = c("#404040", "#0000b3")) +
     xlab("\nCampañas") +
     ylab("Nivel de Servicio") +
