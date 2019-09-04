@@ -741,7 +741,7 @@ ServiceLevel <- function(df_base,
     geom_rect(xmin = 0, xmax = length(levels(df_base$CAMP))+1, ymin = 0.5, ymax = umbral, fill="#fac8bf",col="black", alpha=0.1) +
     geom_rect(xmin = 0, xmax = length(levels(df_base$CAMP))+1, ymin = umbral, ymax = 2, fill="#99ffba",col="black", alpha=0.1) +
     geom_point(aes(group = ZONAS), size=3.5) +
-    ggtitle(paste0(titulo," (", unique(substr(DF_TOTAL$CAMP,1,4)),")")) +
+    ggtitle(paste0(titulo," (", unique(substr(df_base$CAMP,1,4)),")")) +
     geom_line(aes(group = ZONAS), size=2) +
     scale_x_discrete(drop=F) +
     scale_y_continuous(limit=c(0.7, 1), expand = c(0,0), breaks=seq(0.7,1,0.05), labels = scales::percent_format(accuracy = 1L))+
