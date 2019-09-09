@@ -794,13 +794,15 @@ validate_models <- function(modset, actual, reference = matrix(rep("",4),nr=2,nc
                                               function(i)
                                                 tryCatch(predict(x, df_test[i,]),
                                                          error=function(e) NA))})
-  names(values) <- names(modset)
-
   if(is.null(nrow(values))){
     values <- data.frame(t(values))
   }
 
-  values[y_type=="log"] <- sapply(values[y_type=="log"], FUN = function(x){exp(x)})
+  colnames(values) <- names(modset)
+
+  if(sum(y_type == "log") > 0){
+    values[y_type=="log"] <- sapply(values[y_type=="log"], FUN = function(x){exp(x)})
+  }
 
   if (reference[1,1] != ""){
     values <- cbind(values, reference)
