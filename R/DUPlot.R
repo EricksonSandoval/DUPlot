@@ -16,6 +16,10 @@
 #' @param plot.qvar
 #' @param show.lab
 #' @param umbral
+#' @param modset
+#' @param actual
+#' @param reference
+#' @param df_test
 #'
 #' @export
 #' @examples
@@ -778,3 +782,47 @@ ServiceLevel <- function(df_base,
 }
 
 
+validate_models <- function(modset, actual, reference = "", df_test=""){
+
+  library(DescTools)
+  #library(relaimpo)
+
+  model_type <- sapply(modset, function(x){class(x)[[1]]})
+  y_type <- sapply(modset, function(x){substr(deparse(x$terms[[2]]), 1, 3)})
+
+  values <- sapply(modset, function(x){predict(x, df_test)})
+  names(values) <- names(modset)
+
+  values[,y_type=="log"] <- sapply(values[,y_type=="log"], FUN = function(x){exp(x)})
+
+  if (reference[1,1] != ""){
+    values <- cbind(values, reference)
+    for (i in 1:ncol(reference)){
+      model_type <- c(model_type, "lm")
+      y_type <- c(y_type, "nor")
+    }
+  }
+
+  cons_var <- data.frame(MODEL = ifelse(model_type=="lm", "Linear Model",
+                                        ifelse(model_type=="glm",
+                                               "G. Linear Model",
+                                               "Random Forest")))
+  cons_var$TRANS <- ifelse(y_type == "log", "Logarithm", "Normal")
+  cons_var$MAPE <- apply(values, 2, function(x){MAPE(x,actual, na.rm = T)})
+  cons_var$MAE_S <- apply(values, 2, function(x){sum(sapply(x-actual,function(y){max(0,y)}), na.rm = T)})
+  cons_var$MAE_S_C <- apply(values, 2, function(x){mean((actual/x <= 1), na.rm=T)})
+  cons_var$MAE_F <- apply(values, 2, function(x){sum(sapply(actual-x,function(y){max(0,y)}), na.rm = T)})
+  cons_var$MAE_suma <- apply(values, 2, function(x){sum(abs(actual-x), na.rm = T)})
+  cons_var$MAE <- apply(values, 2, function(x){MAE(x, actual, na.rm = T)})
+  cons_var$RMSE <- apply(values, 2, function(x){RMSE(x, actual, na.rm = T)})
+  #cons_var$LNE <- apply(values, 2, function(x){sum(log(x/actual)^2)})
+  cons_var$BRLE <- apply(values, 2, function(x){mean((actual/x <= 0.5), na.rm = T)})
+  cons_var$BRRE <- apply(values, 2, function(x){mean((actual/x >= 1.8), na.rm = T)})
+  cons_var$BRTE <- apply(values, 2, function(x){mean((actual/x <= 0.5) + (actual/x >= 1.8), na.rm = T)})
+  row.names(cons_var) <- colnames(values)
+  #values$rank <-  rownames(data.frame(mod_lor1.1[7]))[order(data.frame(mod_lor1.1[7]), decreasing = T)]
+  #ranking_lm <- names(calc.relimp(mod_lor1.3)$lmg)[order(calc.relimp(mod_lor1.3)$lmg, decreasing = T)]
+
+  return(list(error_analysis = cons_var, forecast_values = values))
+
+}
