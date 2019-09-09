@@ -9,7 +9,11 @@ Authors@R: c(person(given = "Erickson",
              person(given = "Pavel",
                     family = "Cotacallapa",
                     role = c("aut"),
-                    email = "pcotacallapa@pucp.edu.pe"))
+                    email = "pcotacallapa@pucp.edu.pe"),
+             person(given = "Anthony",
+                    family = "Castro",
+                    role = c("aut"),
+                    email = "amca.castro16@gmail.com"))
 Description: This package gather several visualization designs which representation lets make quick analysis and consequently take better decisions in business
 Encoding: UTF-8
 LazyData: FALSE

@@ -782,18 +782,25 @@ ServiceLevel <- function(df_base,
 }
 
 
-validate_models <- function(modset, actual, reference = "", df_test=""){
+validate_models <- function(modset, actual, reference = matrix(rep("",4),nr=2,nc=2), df_test=""){
 
   library(DescTools)
-  #library(relaimpo)
+  library(relaimpo)
 
   model_type <- sapply(modset, function(x){class(x)[[1]]})
   y_type <- sapply(modset, function(x){substr(deparse(x$terms[[2]]), 1, 3)})
 
-  values <- sapply(modset, function(x){predict(x, df_test)})
+  values <- sapply(modset, function(x){sapply(1:nrow(df_test),
+                                              function(i)
+                                                tryCatch(predict(x, df_test[i,]),
+                                                         error=function(e) NA))})
   names(values) <- names(modset)
 
-  values[,y_type=="log"] <- sapply(values[,y_type=="log"], FUN = function(x){exp(x)})
+  if(is.null(nrow(values))){
+    values <- data.frame(t(values))
+  }
+
+  values[y_type=="log"] <- sapply(values[y_type=="log"], FUN = function(x){exp(x)})
 
   if (reference[1,1] != ""){
     values <- cbind(values, reference)
@@ -819,7 +826,7 @@ validate_models <- function(modset, actual, reference = "", df_test=""){
   cons_var$BRLE <- apply(values, 2, function(x){mean((actual/x <= 0.5), na.rm = T)})
   cons_var$BRRE <- apply(values, 2, function(x){mean((actual/x >= 1.8), na.rm = T)})
   cons_var$BRTE <- apply(values, 2, function(x){mean((actual/x <= 0.5) + (actual/x >= 1.8), na.rm = T)})
-  row.names(cons_var) <- colnames(values)
+  row.names(cons_var) <- if(is.null(nrow(values))){rownames(values)}else{colnames(values)}
   #values$rank <-  rownames(data.frame(mod_lor1.1[7]))[order(data.frame(mod_lor1.1[7]), decreasing = T)]
   #ranking_lm <- names(calc.relimp(mod_lor1.3)$lmg)[order(calc.relimp(mod_lor1.3)$lmg, decreasing = T)]
 
