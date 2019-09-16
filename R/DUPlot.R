@@ -782,6 +782,7 @@ ServiceLevel <- function(df_base,
 }
 
 
+
 validate_models <- function(modset, actual, reference = matrix(rep("",4),nr=2,nc=2), df_test=""){
 
   library(DescTools)
@@ -801,7 +802,7 @@ validate_models <- function(modset, actual, reference = matrix(rep("",4),nr=2,nc
   colnames(values) <- names(modset)
 
   if(sum(y_type == "log") > 0){
-    values[y_type=="log"] <- sapply(values[y_type=="log"], FUN = function(x){exp(x)})
+    values[,y_type=="log"] <- sapply(values[,y_type=="log"], FUN = function(x){exp(x)})
   }
 
   if (reference[1,1] != ""){
