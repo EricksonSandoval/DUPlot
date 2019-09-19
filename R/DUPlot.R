@@ -783,35 +783,51 @@ ServiceLevel <- function(df_base,
 
 
 
-validate_models <- function(modset, actual, reference = matrix(rep("",4),nr=2,nc=2), df_test=""){
+validate_models <- function(modset=c("",""), actual, reference = matrix(rep("",4),nr=2,nc=2), df_test=""){
 
   library(DescTools)
   library(relaimpo)
 
-  model_type <- sapply(modset, function(x){class(x)[[1]]})
-  y_type <- sapply(modset, function(x){substr(deparse(x$terms[[2]]), 1, 3)})
+  if(modset[1]!=""){
 
-  values <- sapply(modset, function(x){sapply(1:nrow(df_test),
-                                              function(i)
-                                                tryCatch(predict(x, df_test[i,]),
-                                                         error=function(e) NA))})
-  if(is.null(nrow(values))){
-    values <- data.frame(t(values))
-  }
+    model_type <- sapply(modset, function(x){class(x)[[1]]})
+    y_type <- sapply(modset, function(x){substr(deparse(x$terms[[2]]), 1, 3)})
 
-  colnames(values) <- names(modset)
-
-  if(sum(y_type == "log") > 0){
-    values[,y_type=="log"] <- sapply(values[,y_type=="log"], FUN = function(x){exp(x)})
-  }
-
-  if (reference[1,1] != ""){
-    values <- cbind(values, reference)
-    for (i in 1:ncol(reference)){
-      model_type <- c(model_type, "lm")
-      y_type <- c(y_type, "nor")
+    values <- sapply(modset, function(x){sapply(1:nrow(df_test),
+                                                function(i)
+                                                  tryCatch(predict(x, df_test[i,]),
+                                                           error=function(e) NA))})
+    if(is.null(nrow(values))){
+      values <- data.frame(t(values))
     }
+
+    colnames(values) <- names(modset)
+
+    if(sum(y_type == "log") > 0){
+      values[,y_type=="log"] <- sapply(values[,y_type=="log"], FUN = function(x){exp(x)})
+    }
+
+    if (reference[1,1] != ""){
+      values <- cbind(values, reference)
+      for (i in 1:ncol(reference)){
+        model_type <- c(model_type, "lm")
+        y_type <- c(y_type, "nor")
+      }
+    }
+
   }
+  else{
+    values <- reference
+
+    if(is.null(nrow(values))){
+      values <- data.frame(t(values))
+    }
+
+    model_type <- rep("lm", ncol(values))
+    y_type <- rep("nor", ncol(values))
+  }
+
+
 
   cons_var <- data.frame(MODEL = ifelse(model_type=="lm", "Linear Model",
                                         ifelse(model_type=="glm",
